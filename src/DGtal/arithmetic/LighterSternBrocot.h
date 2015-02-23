@@ -44,8 +44,9 @@
 // Inclusions
 #include <iostream>
 #include <vector>
+#include <map>
+
 #include "DGtal/base/Common.h"
-#include "DGtal/base/StdRebinders.h"
 #include "DGtal/base/InputIteratorWithRankOnSequence.h"
 #include "DGtal/kernel/CInteger.h"
 #include "DGtal/kernel/NumberTraits.h"
@@ -102,20 +103,18 @@ namespace DGtal
    @tparam TMap the rebinder type for defining an association TQuotient ->
    LighterSternBrocot::Node*. For instance, StdMapRebinder is fine.
   */
-  template <typename TInteger, typename TQuotient, 
-            typename TMap = StdMapRebinder >
+  template <typename TInteger, typename TQuotient>
   class LighterSternBrocot
   {
   public:
     typedef TInteger Integer;
     typedef TQuotient Quotient;
-    typedef TMap Map;
-    typedef LighterSternBrocot<TInteger,TQuotient,TMap> Self;
+    typedef LighterSternBrocot<TInteger,TQuotient> Self;
     
-    BOOST_CONCEPT_ASSERT(( concepts::CInteger< Integer > ));
+//    BOOST_CONCEPT_ASSERT(( concepts::CInteger< Integer > ));
 
     struct Node;
-    typedef typename TMap:: template Rebinder<Quotient, Node*>::Type MapQuotientToNode;
+    typedef typename std::map<Quotient, Node*> MapQuotientToNode;
 
   public:
 
@@ -135,6 +134,10 @@ namespace DGtal
 
        @see LighterSternBrocot::fraction
     */
+    /*
+    #ifdef SWIG
+    %feature("flatnested")
+    #endif*/
     struct Node {
 
       /**
@@ -216,7 +219,7 @@ namespace DGtal
     public:
       typedef TInteger Integer;
       typedef TQuotient Quotient;
-      typedef LighterSternBrocot<TInteger, TQuotient, TMap> SternBrocotTree;
+      typedef LighterSternBrocot<TInteger, TQuotient> SternBrocotTree;
       typedef typename SternBrocotTree::Fraction Self;
       typedef typename NumberTraits<Integer>::UnsignedVersion UnsignedInteger;
       typedef std::pair<Quotient, Quotient> Value;

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Parameter
+dgtalPath=../..
+
+# Compilation
+swig3.0 -c++ -python -Wall dgtal.i
+# Warning : This ligne will not work unless you modify the dgtal_wrap.cxx so we created dgtal_wrap_modified.cxx with the modifications
+g++ -O2 -fPIC -c dgtal_wrap_modified.cxx -I/usr/include/python2.7 -I$dgtalPath/src/ -I$dgtalPath/build/src/
+g++ -O2 -fPIC -c $dgtalPath/src/DGtal/kernel/NumberTraits.cpp -I$dgtalPath/src/ -I$dgtalPath/build/src/
+g++ -O2 -fPIC -c $dgtalPath/src/DGtal/arithmetic/LighterSternBrocot.cpp -I$dgtalPath/src/ -I$dgtalPath/build/src/
+g++ -O2 -fPIC -c $dgtalPath/src/DGtal/base/Common.cpp -I$dgtalPath/src/ -I$dgtalPath/build/src/
+
+# librairy building
+g++ -shared Common.o LighterSternBrocot.o NumberTraits.o dgtal_wrap_modified.o -o _dgtal.so
+
+# exemple execution
+python test.py

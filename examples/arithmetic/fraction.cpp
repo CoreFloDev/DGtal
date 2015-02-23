@@ -43,7 +43,7 @@ int main( int argc, char** argv )
   //! [fraction-types]
   typedef DGtal::int64_t Integer;
   typedef DGtal::int64_t Quotient;
-  typedef LighterSternBrocot<Integer, Quotient, StdMapRebinder> SB; // the type of the Stern-Brocot tree
+  typedef LighterSternBrocot<Integer, Quotient> SB; // the type of the Stern-Brocot tree
   typedef SB::Fraction Fraction; // the type for fractions
   typedef std::back_insert_iterator< Fraction > OutputIterator;
   //! [fraction-types]
