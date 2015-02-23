@@ -13,6 +13,11 @@ import pprint
 import traceback
 from mako.template import Template
 
+LIB_CLANG = '/usr/lib/llvm-3.6/lib/libclang.so'
+MAKO_PATH = 'swig.mako'
+OUTPUT_FILE = 'src/SWIG/dgtal_output.i'
+SOURCE_PATH = 'src/DGtal/arithmetic/LighterSternBrocot.h'
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -46,14 +51,16 @@ def traverse(node,parent,filename):
         ret = dict(ret.items() + trav.items())
         
     return ret
+#end traverse
+
 
 # load Clang
-clang.cindex.Config.set_library_file('/usr/lib/llvm-3.6/lib/libclang.so')
+clang.cindex.Config.set_library_file(LIB_CLANG)
 index = clang.cindex.Index.create()
-
 
 allowedExt = ['.h','.cpp','.ih']
 CK = clang.cindex.CursorKind
+
 
 types = {"TInteger"  : {"Type":"int","Renommage":"i64"},
          "TQuotient" : {"Type":"int","Renommage":"i64"}}
@@ -62,11 +69,11 @@ types = {"TInteger"  : {"Type":"int","Renommage":"i64"},
 print bcolors.OKGREEN+"--- Starting swig generation ---"+bcolors.ENDC
 
 # test with only one source
-sourcePath = 'src/DGtal/arithmetic/LighterSternBrocot.h'
-translation_unit = index.parse(sourcePath, ['-x', 'c++', '-std=c++11', '-D__CODE_GENERATOR__'])
-templateFound = traverse(translation_unit.cursor,None,sourcePath)
+translation_unit = index.parse(SOURCE_PATH, ['-x', 'c++', '-std=c++11', '-D__CODE_GENERATOR__'])
+templateFound = traverse(translation_unit.cursor,None,SOURCE_PATH)
 templates = []
-includes = [sourcePath]
+includes = [SOURCE_PATH]
+
 
 # generate template name and template instance
 for t in templateFound:
@@ -90,11 +97,12 @@ for t in templateFound:
     templates.append({"instance":instance,"instanceName":instanceName})
 
 # generate the swig interface
-tpl = Template(filename='swig.mako')
+tpl = Template(filename=MAKO_PATH)
 output = tpl.render(templates=templates,
                     includes=includes)
 print output
 
-f = open('dgtal.i','w')
+ 
+f = open(OUTPUT_FILE,'w')
 f.write(output)
 f.close()
