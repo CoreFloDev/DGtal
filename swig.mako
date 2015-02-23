@@ -1,6 +1,8 @@
 
 %%module dgtal
 
+%%feature("flatnested");
+
 %%{
 % for i in includes :
 #include "${i}"

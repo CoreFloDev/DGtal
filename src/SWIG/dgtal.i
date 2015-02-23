@@ -3,11 +3,10 @@
 %feature("flatnested");
 
 %{
-#include "/home/florent/projet/DGtal/src/DGtal/arithmetic/LighterSternBrocot.h"
-using namespace DGtal;
+#include "../DGtal/arithmetic/LighterSternBrocot.h"
 %}
 
-%include "/home/florent/projet/DGtal/src/DGtal/arithmetic/LighterSternBrocot.h"
+%include "../DGtal/arithmetic/LighterSternBrocot.h"
 
 %template (LightSternBrocot) DGtal::LighterSternBrocot<int,int>;
 %rename (Fraction) LightSternBrocot::Fraction;
