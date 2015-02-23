@@ -84,10 +84,10 @@ output = tpl.render(templates=templates,
                     includes=includes)
 print output
 
-output = OUTPUT_FILE
+output_file = OUTPUT_FILE
 if len(sys.argv) > 2:
-    output = sys.argv[2]
+    output_file = sys.argv[2]
  
-f = open( output,'w')
+f = open( output_file,'w')
 f.write(output)
 f.close()
