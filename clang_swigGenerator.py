@@ -15,8 +15,8 @@ import pprint
 import traceback
 from mako.template import Template
 
-LIB_CLANG = '/usr/lib/libclang.so'
-MAKO_PATH = 'src/SWIG/swig.mako'
+LIB_CLANG = '/usr/lib/llvm-3.6/lib/libclang.so'
+MAKO_PATH = 'swig.mako'
 OUTPUT_FILE = 'src/SWIG/dgtal_output.i'
 
 
@@ -57,7 +57,7 @@ def traverse(node,parent,filename):
 #ned traverse
 
 if len(sys.argv) < 2:
-    print("Usage: dump_ast.py header_file [output_file]")
+    print("Usage: clang_swigGenerator.py header_file [output_file]")
     sys.exit()
 
 # load Clang
@@ -68,6 +68,8 @@ index = clang.cindex.Index.create()
 allowedExt = ['.h','.cpp','.ih']
 CK = clang.cindex.CursorKind
 
+types = {"TInteger"  : {"Type":"int","Renommage":"Int"},
+         "TQuotient" : {"Type":"int","Renommage":"Int"}}
 
 print bcolors.OKGREEN+"--- Starting swig generation ---"+bcolors.ENDC
 
@@ -77,6 +79,27 @@ translation_unit = index.parse(sourcePath, ['-x', 'c++', '-std=c++11', '-D__CODE
 templateFound = traverse(translation_unit.cursor,None,sourcePath)
 templates = []
 includes = [sourcePath]
+
+# generate template name and template instance
+for t in templateFound:
+    instance = t+"<"
+    instanceName = t
+    parameters = templateFound[t]
+    for p in parameters:
+    
+        if instanceName != t:
+            instance = instance+","
+        instance = instance + types[p]["Type"]
+        instanceName = instanceName + types[p]["Renommage"]
+
+        # if the type require include, we add them
+        if types[p].has_key("requireInclude"):
+            for i in types[p]["requireInclude"]:
+                if i not in includes:
+                    includes.append(i)
+
+    instance = instance + ">"
+    templates.append({"instance":instance,"instanceName":instanceName})
 
 # generate the swig interface
 tpl = Template(filename=MAKO_PATH)
